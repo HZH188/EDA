@@ -3,65 +3,48 @@
 #include <sstream>
 #include <iostream>
 
-Parser::Parser(const string& filename) : filename(filename) {}
-
-void Parser::parse() {
-    ifstream file(filename);
-    if (!file.is_open()) {
-        cerr << "Error opening file: " << filename << endl;
-        return;
-    }
-
+Design parseInput(const string& filename) {
+    Design design;
+    ifstream infile(filename);
     string line;
-    while (getline(file, line)) {
+
+    while (getline(infile, line)) {
         stringstream ss(line);
-        string word;
-        ss >> word;
-        if (word == "DieSize") {
-            ss >> dieSize.rows >> dieSize.cols;
-        } else if (word == "NumInstances") {
-            int numInstances;
-            ss >> numInstances;
-            for (int i = 0; i < numInstances; ++i) {
-                getline(file, line);
-                stringstream ssInstance(line);
-                string instKeyword, instName;
-                ssInstance >> instKeyword >> instName;
-                instances.push_back({instName});
+        string token;
+        ss >> token;
+
+        if (token == "DieSize") {
+            ss >> design.rows >> design.cols;
+        } else if (token == "NumInstances") {
+            ss >> design.numInstances;
+            design.instances.resize(design.numInstances);
+            for (int i = 0; i < design.numInstances; ++i) {
+                getline(infile, line);
+                ss.clear();
+                ss.str(line);
+                ss >> token >> design.instances[i];
             }
-        } else if (word == "NumNets") {
-            int numNets;
-            ss >> numNets;
-            for (int i = 0; i < numNets; ++i) {
-                getline(file, line);
-                stringstream ssNet(line);
-                string netKeyword, netName;
+        } else if (token == "NumNets") {
+            ss >> design.numNets;
+            design.nets.resize(design.numNets);
+            for (int i = 0; i < design.numNets; ++i) {
+                getline(infile, line);
+                ss.clear();
+                ss.str(line);
+                ss >> token >> design.nets[i].name;
                 int numPins;
-                ssNet >> netKeyword >> netName >> numPins;
-                Net net = {netName, {}};
+                ss >> numPins;
+                design.nets[i].pins.resize(numPins);
                 for (int j = 0; j < numPins; ++j) {
-                    getline(file, line);
-                    stringstream ssPin(line);
-                    string pinKeyword, pinName;
-                    ssPin >> pinKeyword >> pinName;
-                    net.pins.push_back(pinName);
+                    getline(infile, line);
+                    ss.clear();
+                    ss.str(line);
+                    ss >> token >> design.nets[i].pins[j];
                 }
-                nets.push_back(net);
             }
         }
     }
-    file.close();
-}
 
-Die Parser::getDieSize() const {
-    return dieSize;
+    infile.close();
+    return design;
 }
-
-vector<Instance> Parser::getInstances() const {
-    return instances;
-}
-
-vector<Net> Parser::getNets() const {
-    return nets;
-}
-

@@ -1,23 +1,30 @@
 #ifndef PLACE_H
 #define PLACE_H
 
-#include <vector>
-#include <map>
-#include <string>
 #include "parser.h"
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
 
 using namespace std;
 
-class Placer {
-public:
-    Placer(const Die& die, const vector<Instance>& instances, const vector<Net>& nets);
-    map<string, pair<int, int>> place();
-
-private:
-    Die die;
-    vector<Instance> instances;
-    vector<Net> nets;
+struct Position {
+    int x;
+    int y;
+    bool operator==(const Position& other) const {
+        return x == other.x && y == other.y;
+    }
 };
 
-#endif // PLACE_H
+namespace std {
+    template<>
+    struct hash<Position> {
+        size_t operator()(const Position& p) const {
+            return hash<int>()(p.x) ^ hash<int>()(p.y);
+        }
+    };
+}
 
+vector<Position> findOptimalPlacement(const Design& design);
+
+#endif

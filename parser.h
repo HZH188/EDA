@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <string>
-#include <map>
 
 using namespace std;
 
@@ -12,29 +11,15 @@ struct Net {
     vector<string> pins;
 };
 
-struct Instance {
-    string name;
-};
-
-struct Die {
+struct Design {
     int rows;
     int cols;
-};
-
-class Parser {
-public:
-    Parser(const string& filename);
-    void parse();
-    Die getDieSize() const;
-    vector<Instance> getInstances() const;
-    vector<Net> getNets() const;
-
-private:
-    string filename;
-    Die dieSize;
-    vector<Instance> instances;
+    int numInstances;
+    int numNets;
+    vector<string> instances;
     vector<Net> nets;
 };
 
-#endif // PARSER_H
+Design parseInput(const string& filename);
 
+#endif

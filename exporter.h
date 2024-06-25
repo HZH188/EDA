@@ -1,19 +1,12 @@
 #ifndef EXPORTER_H
 #define EXPORTER_H
 
-#include <string>
-#include <map>
+#include "parser.h"
+#include "place.h" // 添加这个头文件
+#include <vector>
 
 using namespace std;
 
-class Exporter {
-public:
-    Exporter(const string& filename);
-    void exportPlacement(const map<string, pair<int, int>>& placement);
+void exportOutput(const string& filename, const vector<Position>& positions, const Design& design);
 
-private:
-    string filename;
-};
-
-#endif // EXPORTER_H
-
+#endif

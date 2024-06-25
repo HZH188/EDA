@@ -2,19 +2,10 @@
 #include <fstream>
 #include <iostream>
 
-Exporter::Exporter(const string& filename) : filename(filename) {}
-
-void Exporter::exportPlacement(const map<string, pair<int, int>>& placement) {
-    ofstream file(filename);
-    if (!file.is_open()) {
-        cerr << "Error opening file: " << filename << endl;
-        return;
+void exportOutput(const string& filename, const vector<Position>& positions, const Design& design) {
+    ofstream outfile(filename);
+    for (size_t i = 0; i < design.instances.size(); ++i) {
+        outfile << design.instances[i] << " " << positions[i].x << " " << positions[i].y << endl;
     }
-
-    for (const auto& entry : placement) {
-        file << entry.first << " " << entry.second.first << " " << entry.second.second << endl;
-    }
-
-    file.close();
+    outfile.close();
 }
-
